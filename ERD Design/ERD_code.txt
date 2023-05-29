@@ -1,0 +1,262 @@
+/*==============================================================*/
+/* DBMS name:      Microsoft SQL Server 2005                    */
+/* Created on:     5/21/2023 7:54:40 PM                         */
+/*==============================================================*/
+
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('ACCOUNT') and o.name = 'FK_ACCOUNT_REFERENCE_CUSTOMER')
+alter table ACCOUNT
+   drop constraint FK_ACCOUNT_REFERENCE_CUSTOMER
+go
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('BANK') and o.name = 'FK_BANK_REFERENCE_ADMIN')
+alter table BANK
+   drop constraint FK_BANK_REFERENCE_ADMIN
+go
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('BRANCH') and o.name = 'FK_BRANCH_REFERENCE_BANK')
+alter table BRANCH
+   drop constraint FK_BRANCH_REFERENCE_BANK
+go
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('BRANCH') and o.name = 'FK_BRANCH_REFERENCE_CUSTOMER')
+alter table BRANCH
+   drop constraint FK_BRANCH_REFERENCE_CUSTOMER
+go
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('BRANCH') and o.name = 'FK_BRANCH_REFERENCE_ADMIN')
+alter table BRANCH
+   drop constraint FK_BRANCH_REFERENCE_ADMIN
+go
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('CUSTOMER') and o.name = 'FK_CUSTOMER_REFERENCE_EMPLOYER')
+alter table CUSTOMER
+   drop constraint FK_CUSTOMER_REFERENCE_EMPLOYER
+go
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('CUSTOMER') and o.name = 'FK_CUSTOMER_REFERENCE_BRANCH')
+alter table CUSTOMER
+   drop constraint FK_CUSTOMER_REFERENCE_BRANCH
+go
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('LOAN') and o.name = 'FK_LOAN_REFERENCE_BRANCH')
+alter table LOAN
+   drop constraint FK_LOAN_REFERENCE_BRANCH
+go
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('LOAN') and o.name = 'FK_LOAN_REFERENCE_EMPLOYER')
+alter table LOAN
+   drop constraint FK_LOAN_REFERENCE_EMPLOYER
+go
+
+if exists (select 1
+   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
+   where r.fkeyid = object_id('LOAN') and o.name = 'FK_LOAN_REFERENCE_CUSTOMER')
+alter table LOAN
+   drop constraint FK_LOAN_REFERENCE_CUSTOMER
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ACCOUNT')
+            and   type = 'U')
+   drop table ACCOUNT
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ADMIN')
+            and   type = 'U')
+   drop table ADMIN
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('BANK')
+            and   type = 'U')
+   drop table BANK
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('BRANCH')
+            and   type = 'U')
+   drop table BRANCH
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CUSTOMER')
+            and   type = 'U')
+   drop table CUSTOMER
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('EMPLOYER')
+            and   type = 'U')
+   drop table EMPLOYER
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LOAN')
+            and   type = 'U')
+   drop table LOAN
+go
+
+/*==============================================================*/
+/* Table: ACCOUNT                                               */
+/*==============================================================*/
+create table ACCOUNT (
+   ACCOUNT_NUM          numeric              not null,
+   SSN                  numeric              null,
+   BALANCE              numeric              null,
+   ACOUNT_TYPE          varchar(25)          null,
+   constraint PK_ACCOUNT primary key (ACCOUNT_NUM)
+)
+go
+
+/*==============================================================*/
+/* Table: ADMIN                                                 */
+/*==============================================================*/
+create table ADMIN (
+   ADMIN_CODE           numeric              not null,
+   USERNAME             varchar(25)          null,
+   PASSWORD             varchar(25)          null,
+   constraint PK_ADMIN primary key (ADMIN_CODE)
+)
+go
+
+/*==============================================================*/
+/* Table: BANK                                                  */
+/*==============================================================*/
+create table BANK (
+   NAME                 varchar(25)          null,
+   ADDRESS              varchar(45)          null,
+   BANK_CODE            numeric              not null,
+   ADMIN_CODE           numeric              null,
+   constraint PK_BANK primary key (BANK_CODE)
+)
+go
+
+/*==============================================================*/
+/* Table: BRANCH                                                */
+/*==============================================================*/
+create table BRANCH (
+   BRANCH_NUMBER        numeric              not null,
+   BANK_CODE            numeric              null,
+   ADDRESS              varchar(45)          null,
+   ADMIN_CODE           numeric              null,
+   SSN                  numeric              null,
+   EMPID                numeric              null,
+   constraint PK_BRANCH primary key (BRANCH_NUMBER)
+)
+go
+
+/*==============================================================*/
+/* Table: CUSTOMER                                              */
+/*==============================================================*/
+create table CUSTOMER (
+   NAME                 varchar(25)          null,
+   PHONE                numeric              null,
+   SSN                  numeric              not null,
+   EMPID                numeric              null,
+   BRANCH_NUMBER        numeric              null,
+   ADDRESS              varchar(45)          null,
+   constraint PK_CUSTOMER primary key (SSN)
+)
+go
+
+/*==============================================================*/
+/* Table: EMPLOYER                                              */
+/*==============================================================*/
+create table EMPLOYER (
+   EMPID                numeric              not null,
+   NAME                 varchar(25)          null,
+   POSITION             varchar(25)          null,
+   constraint PK_EMPLOYER primary key (EMPID)
+)
+go
+
+/*==============================================================*/
+/* Table: LOAN                                                  */
+/*==============================================================*/
+create table LOAN (
+   LOAN_NUM             numeric              not null,
+   BRANCH_NUMBER        numeric              null,
+   LOAN_TYPE            varchar(25)          null,
+   LOAN_AMOUNT          numeric              null,
+   EMPID                numeric              null,
+   SSN                  numeric              null,
+   constraint PK_LOAN primary key (LOAN_NUM)
+)
+go
+
+alter table ACCOUNT
+   add constraint FK_ACCOUNT_REFERENCE_CUSTOMER foreign key (SSN)
+      references CUSTOMER (SSN)
+go
+
+alter table BANK
+   add constraint FK_BANK_REFERENCE_ADMIN foreign key (ADMIN_CODE)
+      references ADMIN (ADMIN_CODE)
+go
+
+alter table BRANCH
+   add constraint FK_BRANCH_REFERENCE_BANK foreign key (BANK_CODE)
+      references BANK (BANK_CODE)
+go
+
+alter table BRANCH
+   add constraint FK_BRANCH_REFERENCE_CUSTOMER foreign key (SSN)
+      references CUSTOMER (SSN)
+go
+
+alter table BRANCH
+   add constraint FK_BRANCH_REFERENCE_ADMIN foreign key (ADMIN_CODE)
+      references ADMIN (ADMIN_CODE)
+go
+
+alter table CUSTOMER
+   add constraint FK_CUSTOMER_REFERENCE_EMPLOYER foreign key (EMPID)
+      references EMPLOYER (EMPID)
+go
+
+alter table CUSTOMER
+   add constraint FK_CUSTOMER_REFERENCE_BRANCH foreign key (BRANCH_NUMBER)
+      references BRANCH (BRANCH_NUMBER)
+go
+
+alter table LOAN
+   add constraint FK_LOAN_REFERENCE_BRANCH foreign key (BRANCH_NUMBER)
+      references BRANCH (BRANCH_NUMBER)
+go
+
+alter table LOAN
+   add constraint FK_LOAN_REFERENCE_EMPLOYER foreign key (EMPID)
+      references EMPLOYER (EMPID)
+go
+
+alter table LOAN
+   add constraint FK_LOAN_REFERENCE_CUSTOMER foreign key (SSN)
+      references CUSTOMER (SSN)
+go
